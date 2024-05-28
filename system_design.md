@@ -60,7 +60,7 @@ Managing and tracking the movement and behavior of animals in real-time is chall
 
 #### Architecture Diagram
 
-![Phase 0 Architecture](/diagrams/phase0.png)
+![Phase 0 Architecture](/diagrams/phase-0.png)
 
 ### Phase 1: Enhanced Prototype
 
@@ -83,7 +83,7 @@ Managing and tracking the movement and behavior of animals in real-time is chall
 
 #### Architecture Diagram
 
-![Phase 1 Architecture](/diagrams/phase1.png)
+![Phase 1 Architecture](/diagrams/phase-1.png)
 
 ### Future Scope
 
