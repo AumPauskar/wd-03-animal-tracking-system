@@ -56,6 +56,8 @@ Our Animal Tracking System provides a robust and scalable solution to these chal
 - **Maps:** Google Maps API
 - **Real-time Communication:** WebSockets (optional)
 - **Notification and Alerts**: Push Notifications for alerts
+- **Containerization**: Docker
+- **Orchestration**: Kubernetes
 
 ## Industries That Could Benefit
 
