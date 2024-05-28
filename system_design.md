@@ -215,6 +215,12 @@ Managing and tracking the movement and behavior of animals in real-time is chall
 - **Load Balancing:** Implement load balancing to handle increased traffic.
 - **Auto-Scaling:** Use cloud services for auto-scaling based on demand.
 
+### References
+
+- **[Server Sent Events vs Websockets](https://ably.com/blog/websockets-vs-sse)**
+- **[Horizontally Scaling websockets](https://medium.com/@ephiram2002/horizontally-scaling-websockets-using-redis-afc25e9f7102)**
+- **[Scale WebSocket using Redis and HAProxy](https://vipulvyas.medium.com/scale-websocket-using-redis-and-haproxy-8e09e4d6ae87)**
+
 ## Conclusion
 
 This system design document outlines the phased development approach for building a robust and scalable Animal Tracking System. By starting with a basic prototype and progressively enhancing the system, we aim to provide a comprehensive solution for real-time animal tracking, group management, and alert generation, addressing the needs of various industries and stakeholders.
