@@ -5,7 +5,6 @@ import COLORS from "./OnboardElements/colors";
 import Button from "./OnboardElements/Button";
 import { useNavigation } from "@react-navigation/native";
 
-
 const Onboarding = () => {
   const nav = useNavigation();
 
@@ -37,8 +36,6 @@ const Onboarding = () => {
 
           <Image
             source={require("../../assets/OnBoard/hero3.jpg")}
-
-           
             style={{
               height: 100,
               width: 100,
@@ -57,8 +54,8 @@ const Onboarding = () => {
           <Image
             // source={require("../../assets/OnBoard/hero3.jpg")}
             source={{
-                uri:'https://i.ibb.co/bdqK46H/Whats-App-Image-2024-06-04-at-01-05-00-c695e5b9.jpg'
-              }} 
+              uri: "https://i.ibb.co/bdqK46H/Whats-App-Image-2024-06-04-at-01-05-00-c695e5b9.jpg",
+            }}
             style={{
               width: 100,
               height: 100,
@@ -75,9 +72,10 @@ const Onboarding = () => {
           />
 
           <Image
- source={{
-    uri: "https://images.ctfassets.net/3prze68gbwl1/asset-17suaysk1qa1i6d/1e3ba5e88bb9307b1039e4193edfca12/687474703a2f2f692e696d6775722e636f6d2f32355a673559422e676966.gif",
-  }}            style={{
+            source={{
+              uri: "https://images.ctfassets.net/3prze68gbwl1/asset-17suaysk1qa1i6d/1e3ba5e88bb9307b1039e4193edfca12/687474703a2f2f692e696d6775722e636f6d2f32355a673559422e676966.gif",
+            }}
+            style={{
               height: 200,
               width: 200,
               borderRadius: 20,
@@ -119,7 +117,7 @@ const Onboarding = () => {
               color: COLORS.white,
             }}
           >
-            Started Admin
+            Started
           </Text>
 
           <View style={{ marginVertical: 22 }}>
@@ -130,7 +128,8 @@ const Onboarding = () => {
                 marginVertical: 4,
               }}
             >
-              Connect with each other with chatting
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora,
+              cumque.{" "}
             </Text>
             <Text
               style={{

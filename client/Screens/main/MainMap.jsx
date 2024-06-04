@@ -1,8 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import MapView, { Marker, Circle } from 'react-native-maps';
+import * as Notifications from 'expo-notifications';
+import { useNavigation } from '@react-navigation/native';
+// Request permissions
+async function requestPermissions() {
+  const { status } = await Notifications.requestPermissionsAsync();
+  if (status !== 'granted') {
+    alert('No notification permissions!');
+    return false;
+  }
+  return true;
+}
+
+// Set a handler for notifications
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const MainMap = () => {
+
+    const nav = useNavigation()
   const [animals, setAnimals] = useState([
     { id: 1, latitude: 37.78825, longitude: -122.4324, color: 'red' },
     { id: 2, latitude: 37.78825, longitude: -122.4328, color: 'blue' },
@@ -69,7 +91,6 @@ useEffect(() => {
     }, 5000);
   }, []);
   
-  // Track when the marker goes out of the radius circle
   const [markerOutsideCircle, setMarkerOutsideCircle] = useState(false); // Flag to track if marker is outside the circle
   useEffect(() => {
     if (!markerOutsideCircle) {
@@ -86,11 +107,33 @@ useEffect(() => {
   
       if (isOutsideCircle) {
         console.log("Marker 5 is outside the radius circle");
-        Alert.alert("Animal 5 is outside")
-        setMarkerOutsideCircle(true); // Set the flag to true to prevent further console logs
+        console.log("Marker 5 is outside the radius circle");
+        Alert.alert(
+            "Animal 5 is outside",
+            "",
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  nav.navigate('animalList');
+                }
+              }
+            ],
+            { cancelable: false }
+          );        setMarkerOutsideCircle(true); // Set the flag to true to prevent further console logs
+
+        // Schedule a notification
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: "Warning!",
+            body: 'Animal 5 is outside the radius circle.',
+          },
+          trigger: null,
+        });
       }
     }
   }, [animals, center, initialRadius, markerOutsideCircle]);
+
   
   return (
     <View style={styles.container}>

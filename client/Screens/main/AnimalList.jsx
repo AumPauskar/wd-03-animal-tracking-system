@@ -7,9 +7,9 @@ const animals = [
   { id: '1', name: 'Animal 1', status: 'active', lastSeen: '' },
   { id: '2', name: 'Animal 2', status: 'active', lastSeen: '' },
   { id: '3', name: 'Animal 3', status: 'active', lastSeen: '' },
-  { id: '4', name: 'Animal 4', status: '', lastSeen: '1m ago' },
-  { id: '5', name: 'Animal 5', status: '', lastSeen: '5m ago' },
-  { id: '6', name: 'Animal 6', status: '', lastSeen: '7m ago' },
+  { id: '4', name: 'Animal 4', status: 'active', lastSeen: '' },
+  { id: '5', name: 'Animal 5', status: '', lastSeen: 'a second ago' },
+  // { id: '6', name: 'Animal 6', status: '', lastSeen: '7m ago' },
 ];
 
 const AnimalList = () => {
@@ -56,7 +56,7 @@ const AnimalList = () => {
       <Text style={styles.header}>Tags</Text>
       <View style={styles.circleContainer}>
         <View style={styles.circle}>
-          <Text style={styles.circleText}>6 tags active</Text>
+          <Text style={styles.circleText}>4 tags active</Text>
           <Text style={styles.circleSubText}>70% spent</Text>
         </View>
       </View>
