@@ -4,8 +4,6 @@ export const PORT = process.env.PORT || 5000;
 
 export const DB_URL = process.env.DB_URL || "";
 
-export const DB_PORT = Number(process.env.DB_PORT) || 3306;
-
 export const DB_HOST =
   process.env.TEST_ENV !== "local" ? process.env.DB_HOST : "localhost";
 
@@ -16,13 +14,5 @@ export const DB_PASSWORD = process.env.DB_PASSWORD || "";
 export const DB_SCHEMA = process.env.DB_SCHEMA || "";
 
 export const JWT_SECRET = process.env.JWT_SECRET || "dadggfssd";
-
-export const FIREBASE_BUCKET_NAME = process.env.FIREBASE_BUCKET_ID as string;
-
-export const ALLOWED_NOTES_MIME_TYPES = [
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-];
 
 export const EXPO_ACCESS_TOKEN = process.env.EXPO_ACCESS_TOKEN as string;

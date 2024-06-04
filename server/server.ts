@@ -2,7 +2,13 @@ import express, { urlencoded, json } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import { NODE_ENV } from "./config";
-import { authRoutes } from "./routes";
+import {
+  animalRoutes,
+  animalTypeRoutes,
+  authRoutes,
+  groupRoutes,
+  locationRoutes,
+} from "./routes";
 
 export function startServer() {
   const app = express();
@@ -16,11 +22,14 @@ export function startServer() {
   }
 
   app.use("/v1/auth", authRoutes);
-  //   app.use("/v1/profile", profileRoutes);
-  //   app.use("/v1/notes", notesRoutes);
-  //   app.use("/v1/tests", testRoutes);
-  //   app.use("/v1/lectures", lectureRoutes);
-  //   app.use("/v1/notifications", notificationsRoutes);
+  app.use("/v1/animals", animalRoutes);
+  app.use("/v1/groups", groupRoutes);
+  app.use("/v1/animal-types", animalTypeRoutes);
+  app.use("/v1/locations", locationRoutes);
+
+  app.get("/", (req, res) => {
+    res.send("Hello from System!");
+  });
 
   app.get("/healthcheck", (req, res) => {
     return res.status(200).json({ message: "Server is working fine" });
