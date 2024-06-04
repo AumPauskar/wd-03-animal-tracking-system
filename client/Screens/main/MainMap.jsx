@@ -88,7 +88,7 @@ useEffect(() => {
           return animal;
         })
       ));
-    }, 5000);
+    }, 9000);
   }, []);
   
   const [markerOutsideCircle, setMarkerOutsideCircle] = useState(false); // Flag to track if marker is outside the circle

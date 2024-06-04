@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,29 @@ import { useNavigation } from "@react-navigation/native";
 
 const SignInScreen = () => {
   const nav = useNavigation();
+
+  // Add state for email and password
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
+
+  const handleSignIn = async () => {
+
+  
+    try {
+      const response = await fetch("https://animal-tracking.onrender.com/api/v1/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(credentials)
+      });
+  
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error signing in:", error);
+    }
+  };
+  
 
   return (
     <LinearGradient
@@ -41,20 +64,25 @@ const SignInScreen = () => {
           style={styles.input}
           placeholder="Enter your email"
           placeholderTextColor="#aaa"
+          value={credentials.email}
+          onChangeText={(text) =>
+            setCredentials({ ...credentials, email: text })
+          }
         />
         <TextInput
           style={styles.input}
           placeholder="Enter your password"
           placeholderTextColor="#aaa"
           secureTextEntry
+          value={credentials.password}
+          onChangeText={(text) =>
+            setCredentials({ ...credentials, password: text })
+          }
         />
         <TouchableOpacity>
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginButton}
-        
-        onPress={()=>nav.navigate('mainMap')}
-        >
+        <TouchableOpacity style={styles.loginButton} onPress={handleSignIn}>
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
         <Text style={styles.orText}>Or continue with</Text>
