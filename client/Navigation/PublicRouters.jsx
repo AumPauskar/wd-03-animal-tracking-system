@@ -5,6 +5,8 @@ import Onboarding from "../Screens/Onboarding/Onboarding";
 import SignInScreen from "../Screens/Auth/SignInScreen";
 import SignUpScreen from "../Screens/Auth/SignUpScreen";
 import MainMap from "../Screens/main/MainMap";
+import BottomNavigation from "./BottomNavigation";
+import AnimalList from "../Screens/main/AnimalList";
 
 const Stack = createStackNavigator();
 
@@ -32,11 +34,35 @@ const PublicRouters = () => {
 
         <Stack.Screen
           name="mainMap"
-          component={MainMap}
+          component={MainMapWithBottomNavigation}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="animalList"
+          component={AnimalLists}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
+  );
+};
+
+const AnimalLists = () => {
+  return (
+    <>
+      <AnimalList />
+      <BottomNavigation />
+    </>
+  );
+};
+
+const MainMapWithBottomNavigation = () => {
+  return (
+    <>
+      <MainMap />
+      <BottomNavigation />
+    </>
   );
 };
 
