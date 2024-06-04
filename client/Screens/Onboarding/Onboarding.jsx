@@ -2,12 +2,29 @@ import { View, Text, Pressable, Image, ScrollView } from "react-native";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import COLORS from "./OnboardElements/colors";
+import { useEffect, useState } from "react";
 import Button from "./OnboardElements/Button";
 import { useNavigation } from "@react-navigation/native";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const Onboarding = () => {
   const nav = useNavigation();
 
+  useEffect(() => {
+    checkAuthToken();
+  }, []);
+
+  const checkAuthToken = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem("authToken");
+      if (authToken) {
+        nav.navigate("mainMap");
+  
+      }
+    } catch (error) {
+      console.error("Error checking authToken:", error);
+    }
+  };
+  
   return (
     <LinearGradient
       style={{

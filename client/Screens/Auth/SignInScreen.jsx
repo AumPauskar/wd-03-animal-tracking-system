@@ -6,36 +6,77 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const SignInScreen = () => {
   const nav = useNavigation();
 
   // Add state for email and password
   const [credentials, setCredentials] = useState({ email: "", password: "" });
-
   const handleSignIn = async () => {
-
-  
     try {
-      const response = await fetch("https://animal-tracking.onrender.com/api/v1/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(credentials)
-      });
-  
-      const data = await response.json();
-      console.log(data);
+      const response = await fetch(
+        "https://animal-tracking.onrender.com/api/v1/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(credentials),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Login successful:", data);
+
+        await AsyncStorage.setItem("authToken", data.content.authToken);
+
+        console.log(data.content.authToken);
+
+        const authToken = data.content.authToken; // Get authToken from response
+        const userDataResponse = await fetch(
+          "https://animal-tracking.onrender.com/api/v1/auth/me",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (userDataResponse.ok) {
+          const userData = await userDataResponse.json();
+          await AsyncStorage.setItem("userData", JSON.stringify(userData));
+          const userDataString = await AsyncStorage.getItem("userData");
+          const userDat = JSON.parse(userDataString);
+          console.log(userDat);
+          nav.navigate("mainMap");
+
+        } else {
+          console.error(
+            "Failed to fetch user data:",
+            userDataResponse.statusText
+          );
+        }
+
+        // Optionally, navigate to another screen after successful login
+        // nav.navigate("NextScreen");
+      } else {
+        const data = await response.json();
+        console.error("Login failed:", data.message);
+        Alert.alert("Login failed. Please check your credentials");
+      }
     } catch (error) {
       console.error("Error signing in:", error);
+      Alert.alert("An error occurred. Please try again later.");
     }
   };
-  
 
   return (
     <LinearGradient

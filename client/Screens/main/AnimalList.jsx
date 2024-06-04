@@ -1,25 +1,56 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, StatusBar, Modal, TextInput, TouchableOpacity, Animated } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, StatusBar, Modal, TextInput, TouchableOpacity, Animated, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-
-const animals = [
-  { id: '1', name: 'Animal 1', status: 'active', lastSeen: '' },
-  { id: '2', name: 'Animal 2', status: 'active', lastSeen: '' },
-  { id: '3', name: 'Animal 3', status: 'active', lastSeen: '' },
-  { id: '4', name: 'Animal 4', status: 'active', lastSeen: '' },
-  { id: '5', name: 'Animal 5', status: '', lastSeen: 'a second ago' },
-  // { id: '6', name: 'Animal 6', status: '', lastSeen: '7m ago' },
-];
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 const AnimalList = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [newAnimalName, setNewAnimalName] = useState('');
   const [newAnimalStatus, setNewAnimalStatus] = useState('');
   const [animation] = useState(new Animated.Value(0));
+  const [userData, setUserData] = useState(null); // State to store user data
+  const [authToken, setAuthToken] = useState(null); // State to store authToken
+  const [animalData, setAnimalData] = useState([]); // State to store fetched animal data
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem("authToken");
+      if (!authToken) {
+        Alert.alert("Authentication Error", "Authentication token not found. Please sign in again.");
+        return;
+      }
+      setAuthToken(authToken); 
+
+      const response = await fetch("https://animal-tracking.onrender.com/api/v1/animals/users", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Data received:", data);
+        setAnimalData(data);
+      } else {
+        console.error("Failed to fetch data:", response.statusText);
+        Alert.alert("Failed to fetch data. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      Alert.alert("An error occurred while fetching user data.");
+    }
+  };
+  
 
   const handleAddAnimal = () => {
-    // Handle adding the new animal
     setModalVisible(false);
   };
 
@@ -56,20 +87,16 @@ const AnimalList = () => {
       <Text style={styles.header}>Tags</Text>
       <View style={styles.circleContainer}>
         <View style={styles.circle}>
-          <Text style={styles.circleText}>4 tags active</Text>
+          <Text style={styles.circleText}>{animalData.length} active</Text>
           <Text style={styles.circleSubText}>70% spent</Text>
         </View>
       </View>
       <View style={styles.listContainer}>
-        {animals.map((item) => (
-          <View key={item.id} style={styles.itemContainer}>
+        {animalData.map((item, index) => (
+          <View key={index} style={styles.itemContainer}>
             <View style={[styles.statusIndicator, item.status === 'active' ? styles.active : styles.inactive]} />
             <Text style={styles.itemText}>{item.name}</Text>
-            {item.lastSeen ? (
-              <Text style={styles.lastSeenText}>last seen {item.lastSeen} ago</Text>
-            ) : (
-              <Text style={styles.activeText}>active</Text>
-            )}
+            <Text style={styles.lastSeenText}>last seen 1 second ago</Text>
           </View>
         ))}
       </View>
