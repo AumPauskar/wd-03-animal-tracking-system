@@ -27,7 +27,10 @@ const SignUpScreen = () => {
       />
       <View style={styles.container}>
         <View style={styles.switchContainer}>
-          <TouchableOpacity style={styles.switchButtonInactive}>
+          <TouchableOpacity style={styles.switchButtonInactive}
+          
+          onPress={()=>nav.navigate('signInScreen')}
+          >
             <Text style={styles.switchButtonTextInactive}>Sign in </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.switchButtonActive}>

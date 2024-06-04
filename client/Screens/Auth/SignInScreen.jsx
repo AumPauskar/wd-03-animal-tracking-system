@@ -12,8 +12,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 
 const SignInScreen = () => {
-
-const  nav = useNavigation()
+  const nav = useNavigation();
 
   return (
     <LinearGradient
@@ -27,12 +26,14 @@ const  nav = useNavigation()
         style={styles.backgroundImage}
       />
       <View style={styles.container}>
-
         <View style={styles.switchContainer}>
           <TouchableOpacity style={styles.switchButtonActive}>
             <Text style={styles.switchButtonTextActive}>Sign in </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.switchButtonInactive}>
+          <TouchableOpacity
+            style={styles.switchButtonInactive}
+            onPress={() => nav.navigate("signUpScreen")}
+          >
             <Text style={styles.switchButtonTextInactive}>Register</Text>
           </TouchableOpacity>
         </View>
@@ -50,7 +51,10 @@ const  nav = useNavigation()
         <TouchableOpacity>
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton}
+        
+        onPress={()=>nav.navigate('mainMap')}
+        >
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
         <Text style={styles.orText}>Or continue with</Text>
@@ -64,10 +68,7 @@ const  nav = useNavigation()
             <Text style={styles.socialButtonText}>Continue with Google</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity
-        onPress={()=>nav.navigate('signUpScreen')} 
-        
-        >
+        <TouchableOpacity onPress={() => nav.navigate("signUpScreen")}>
           <Text style={styles.signUpText}>Don't have an account? Sign Up</Text>
         </TouchableOpacity>
       </View>
@@ -103,7 +104,6 @@ const styles = StyleSheet.create({
     overflow: "hidden", // Ensure the image stays within the rounded border
     boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
   },
-  
 
   switchContainer: {
     flexDirection: "row",
