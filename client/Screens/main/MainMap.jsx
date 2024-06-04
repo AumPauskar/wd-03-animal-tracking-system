@@ -1,26 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { Alert, StyleSheet, View } from 'react-native';
+import MapView, { Marker, Circle } from 'react-native-maps';
 
 const MainMap = () => {
   const [animals, setAnimals] = useState([
     { id: 1, latitude: 37.78825, longitude: -122.4324, color: 'red' },
-    { id: 2, latitude: 37.78875, longitude: -122.4328, color: 'blue' },
-    { id: 3, latitude: 37.78835, longitude: -122.4330, color: 'green' },
-    { id: 4, latitude: 37.78795, longitude: -122.4325, color: 'orange' },
-    { id: 5, latitude: 37.78755, longitude: -122.4322, color: 'purple' },
+    { id: 2, latitude: 37.78825, longitude: -122.4328, color: 'blue' },
+    { id: 3, latitude: 37.78825, longitude: -122.4332, color: 'green' },
+    { id: 4, latitude: 37.78825, longitude: -122.4336, color: 'orange' },
+    { id: 5, latitude: 37.78825, longitude: -122.4340, color: 'purple' },
     // Add more animals here as needed
   ]);
 
+  const initialCenter = { latitude: 37.78825, longitude: -122.4324 }; // Initial center
+  const initialRadius = 500; // Initial radius in meters
+  const stepSize = 0.0001; // Adjust this value to control the step size
+
   useEffect(() => {
     const interval = setInterval(() => {
-      const destination = { latitude: 37.78028, longitude: -122.40550 }; // Destination point
       setAnimals(prevAnimals => (
         prevAnimals.map(animal => ({
           ...animal,
-          // Move each animal towards the destination point
-          latitude: moveTowardDestination(animal.latitude, destination.latitude),
-          longitude: moveTowardDestination(animal.longitude, destination.longitude)
+          // Move each animal forward in the straight line
+          longitude: animal.longitude + stepSize
         }))
       ));
     }, 200);
@@ -28,12 +30,68 @@ const MainMap = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Function to calculate the next position of the animal towards the destination
-  const moveTowardDestination = (current, destination) => {
-    const step = (destination - current) / 100; // Adjust this value for speed
-    return current + step;
+  // Function to calculate the center of the first four markers
+  const calculateCenter = () => {
+    let sumLat = 0;
+    let sumLng = 0;
+
+    animals.slice(0, 4).forEach(animal => {
+      sumLat += animal.latitude;
+      sumLng += animal.longitude;
+    });
+
+    const center = {
+      latitude: sumLat / 4,
+      longitude: sumLng / 4,
+    };
+
+    return center;
   };
 
+  // Calculate the current center based on the first four markers
+  const center = calculateCenter();
+
+  // Check if marker with id 5 moves outside the circle after 5 seconds
+ // Check if marker with id 5 moves outside the circle after 5 seconds
+useEffect(() => {
+    setTimeout(() => {
+      setAnimals(prevAnimals => (
+        prevAnimals.map(animal => {
+          if (animal.id === 5) {
+            return {
+              ...animal,
+              longitude: animal.longitude + 0.01 // Move marker 5 outside the circle
+            };
+          }
+          return animal;
+        })
+      ));
+    }, 5000);
+  }, []);
+  
+  // Track when the marker goes out of the radius circle
+  const [markerOutsideCircle, setMarkerOutsideCircle] = useState(false); // Flag to track if marker is outside the circle
+  useEffect(() => {
+    if (!markerOutsideCircle) {
+      const isOutsideCircle = animals.some(animal => {
+        if (animal.id === 5) {
+          const distance = Math.sqrt(
+            Math.pow(animal.latitude - center.latitude, 2) +
+            Math.pow(animal.longitude - center.longitude, 2)
+          );
+          return distance > initialRadius / 111300; // 1 degree latitude is approximately 111300 meters
+        }
+        return false;
+      });
+  
+      if (isOutsideCircle) {
+        console.log("Marker 5 is outside the radius circle");
+        Alert.alert("Animal 5 is outside")
+        setMarkerOutsideCircle(true); // Set the flag to true to prevent further console logs
+      }
+    }
+  }, [animals, center, initialRadius, markerOutsideCircle]);
+  
   return (
     <View style={styles.container}>
       <MapView
@@ -54,6 +112,12 @@ const MainMap = () => {
             pinColor={animal.color}
           />
         ))}
+        <Circle
+          center={center}
+          radius={initialRadius} // Use the initial radius
+          strokeColor={'red'} // Red color for the stroke
+          fillColor={'rgba(255,0,0,0.1)'} // Adjust the color and opacity of the fill
+        />
       </MapView>
     </View>
   );
