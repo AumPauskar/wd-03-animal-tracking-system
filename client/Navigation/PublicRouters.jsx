@@ -7,6 +7,9 @@ import SignUpScreen from "../Screens/Auth/SignUpScreen";
 import MainMap from "../Screens/main/MainMap";
 import BottomNavigation from "./BottomNavigation";
 import AnimalList from "../Screens/main/AnimalList";
+import SelectedAnimal from "../Screens/main/mainComponents/SelectedAnimal";
+import CreateGroup from "../Screens/main/CreateGroup";
+import GroupSelection from "../Screens/main/mainComponents/GroupSelection";
 
 const Stack = createStackNavigator();
 
@@ -43,6 +46,22 @@ const PublicRouters = () => {
           component={AnimalLists}
           options={{ headerShown: false }}
         />
+
+      <Stack.Screen
+          name="selectedAnimal"
+          component={SelectedAnimal}
+          options={{ headerShown: true }}
+        />
+              <Stack.Screen
+          name="createGroup"
+          component={CreatingGroup}
+          options={{ headerShown: false }}
+        />
+              <Stack.Screen
+          name="groupSelection"
+          component={GroupSelection}
+          options={{ headerShown: true }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -61,6 +80,15 @@ const MainMapWithBottomNavigation = () => {
   return (
     <>
       <MainMap />
+      <BottomNavigation />
+    </>
+  );
+};
+
+const CreatingGroup = () => {
+  return (
+    <>
+      <CreateGroup />
       <BottomNavigation />
     </>
   );

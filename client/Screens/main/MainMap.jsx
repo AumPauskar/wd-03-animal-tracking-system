@@ -108,19 +108,21 @@ useEffect(() => {
       if (isOutsideCircle) {
         console.log("Marker 5 is outside the radius circle");
         console.log("Marker 5 is outside the radius circle");
-        Alert.alert(
-            "Animal 5 is outside",
-            "",
-            [
-              {
-                text: "OK",
-                onPress: () => {
-                  nav.navigate('animalList');
-                }
-              }
-            ],
-            { cancelable: false }
-          );        setMarkerOutsideCircle(true); // Set the flag to true to prevent further console logs
+        // Alert.alert(
+        //     "Animal 5 is outside",
+        //     "",
+        //     [
+        //       {
+        //         text: "OK",
+        //         onPress: () => {
+        //           nav.navigate('animalList');
+        //         }
+        //       }
+        //     ],
+        //     { cancelable: false }
+        //   );    
+          
+          setMarkerOutsideCircle(true); // Set the flag to true to prevent further console logs
 
         // Schedule a notification
         Notifications.scheduleNotificationAsync({

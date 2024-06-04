@@ -17,6 +17,9 @@ const Onboarding = () => {
     try {
       const authToken = await AsyncStorage.getItem("authToken");
       if (authToken) {
+        const userDataString = await AsyncStorage.getItem("userData");
+        const userDat = JSON.parse(userDataString);
+        console.log(userDat);
         nav.navigate("mainMap");
   
       }
