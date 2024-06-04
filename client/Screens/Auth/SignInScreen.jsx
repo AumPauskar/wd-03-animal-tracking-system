@@ -9,8 +9,12 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { useNavigation } from "@react-navigation/native";
 
 const SignInScreen = () => {
+
+const  nav = useNavigation()
+
   return (
     <LinearGradient
       colors={["#99a3e1", "#b3bce1", "#ccd5ee"]}
@@ -18,21 +22,12 @@ const SignInScreen = () => {
     >
       <Image
         source={{
-          uri: "https://miro.medium.com/v2/resize:fit:1024/0*iRgiB6y8atMchG0o.jpg",
+          uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMlCTNkPGNJRDtA4TuQqQTnJf5iLoQarqPQQ&s",
         }} // Replace with your image URL
         style={styles.backgroundImage}
       />
       <View style={styles.container}>
-        {/* <Image
-          source={{
-            // uri: "https://images.ctfassets.net/3prze68gbwl1/asset-17suaysk1qa1i6d/1e3ba5e88bb9307b1039e4193edfca12/687474703a2f2f692e696d6775722e636f6d2f32355a673559422e676966.gif",
-         
-        uri:'https://i.ibb.co/cyn91sf/beagle.jpg'
-        }} // Replace with your image URL
-          style={styles.logo}
-          resizeMode="cover"
 
-        /> */}
         <View style={styles.switchContainer}>
           <TouchableOpacity style={styles.switchButtonActive}>
             <Text style={styles.switchButtonTextActive}>Sign in </Text>
@@ -69,7 +64,10 @@ const SignInScreen = () => {
             <Text style={styles.socialButtonText}>Continue with Google</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity
+        onPress={()=>nav.navigate('signUpScreen')} 
+        
+        >
           <Text style={styles.signUpText}>Don't have an account? Sign Up</Text>
         </TouchableOpacity>
       </View>

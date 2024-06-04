@@ -7,7 +7,7 @@ import PublicRouters from "./Navigation/PublicRouters";
 export default function App() {
   return (
     <>
-      <StatusBar backgroundColor="black" translucent={false} style="light" />
+      <StatusBar backgroundColor="black" translucent={false} style="dark" />
       <View style={styles.container}>
         <PublicRouters />
       </View>
