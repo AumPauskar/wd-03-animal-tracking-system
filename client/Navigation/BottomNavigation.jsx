@@ -7,7 +7,7 @@ import {
 } from "@expo/vector-icons";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Entypo from '@expo/vector-icons/Entypo'; // Import Entypo icons
+import Entypo from '@expo/vector-icons/Entypo'; 
 
 const BottomNavigation = () => {
   const [activeTab, setActiveTab] = useState("Home");
@@ -25,7 +25,7 @@ const BottomNavigation = () => {
     {
       name: "Tag",
       icon: "price-tag",
-      library: Entypo, // Change to Entypo
+      library: Entypo, 
       screen: "animalList",
       index: 2,
     },
@@ -121,7 +121,7 @@ const BottomNavigation = () => {
               <IconComponent
                 name={tab.icon}
                 size={24}
-                color={isActive ? "#FF0000" : "gray"} // Red color for active tab
+                color={isActive ? "#FF0000" : "gray"} 
               />
               <Text
                 style={[
