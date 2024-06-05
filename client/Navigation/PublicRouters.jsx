@@ -11,6 +11,7 @@ import SelectedAnimal from "../Screens/main/mainComponents/SelectedAnimal";
 import CreateGroup from "../Screens/main/CreateGroup";
 import GroupSelection from "../Screens/main/mainComponents/GroupSelection";
 import DisplayMembers from "../Screens/main/mainComponents/DisplayMembers";
+import PredictMap from "../Screens/main/PredictMap";
 
 const Stack = createStackNavigator();
 
@@ -66,6 +67,11 @@ const PublicRouters = () => {
                   <Stack.Screen
           name="displayMembers"
           component={DisplayMembers}
+          options={{ headerShown: false }}
+        />
+           <Stack.Screen
+          name="predictMap"
+          component={PredictMap}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

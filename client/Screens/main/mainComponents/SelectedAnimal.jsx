@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, Animated } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Animated,
+  TouchableOpacity,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
 
 const SelectedAnimal = ({ route }) => {
+  const nav = useNavigation()
   const { animalData } = route.params;
 
   const fadeInAnim = React.useRef(new Animated.Value(0)).current;
@@ -25,12 +34,27 @@ const SelectedAnimal = ({ route }) => {
     { id: "3", date: "2024-05-28", activity: "Active Full day" },
     { id: "4", date: "2024-05-28", activity: "Active Full day" },
     { id: "5", date: "2024-05-28", activity: "Active Full day" },
-    { id: "6", date: "2024-05-28", activity: "Active Full day" },
+    // { id: "6", date: "2024-05-28", activity: "Active Full day" },
   ];
+
+  // Check if the animal is active or not
+  const isActive = animalData.active;
+  const statusColor = isActive ? "#4CAF50" : "#FF5733";
+  const statusText = isActive ? "Active" : "Inactive";
+  const lastSeenText = isActive
+    ? "Last seen 1 hour ago"
+    : "Last seen 1 hour ago"; // You can replace this with actual logic to determine the last seen time
+
+  // Function to handle prediction button press
+  const handlePredictButtonPress = () => {
+    // Add your prediction logic here
+    nav.navigate('predictMap')
+    console.log("Prediction button pressed");
+  };
 
   return (
     <LinearGradient
-      colors={['#F0F8FF', '#87CEEB', '#FFFFFF']}      
+      colors={["#F0F8FF", "#87CEEB", "#FFFFFF"]}
       style={styles.container}
     >
       <Animated.View style={[styles.innerContainer, { opacity: fadeInAnim }]}>
@@ -46,26 +70,54 @@ const SelectedAnimal = ({ route }) => {
         <View style={styles.detailsContainer}>
           <Text style={styles.type}>Type: Cow</Text>
           <Text style={styles.name}>{animalData.name}</Text>
-          <Text style={styles.status}>Active</Text>
-          <Text style={styles.lastSeen}>Last seen 1 second ago</Text>
+          <Text style={[styles.status, { color: statusColor }]}>
+            {statusText}
+          </Text>
+          <Text style={styles.lastSeen}>{lastSeenText}</Text>
           <View style={styles.historySeparator} />
           <Text style={styles.historyTitle}>Historical Data:</Text>
           {showHistory && (
             <View style={styles.historyContainer}>
               {historicalData.map((item, index) => (
                 <View key={item.id} style={styles.historyItem}>
-                  <View style={styles.historyDot} />
+                  <View
+                    style={[
+                      styles.historyDot,
+                      {
+                        backgroundColor:
+                          !isActive && index === 0 ? "#FF5733" : "#4CAF50",
+                      },
+                    ]}
+                  />
                   <View style={styles.historyContent}>
                     <Text style={styles.historyDate}>{item.date}</Text>
                     <Text style={styles.historyActivity}>{item.activity}</Text>
                   </View>
-                  {index !== historicalData.length - 1 && <View style={styles.historyLine} />}
+                  {index !== historicalData.length - 1 && (
+                    <View
+                      style={[
+                        styles.historyLine,
+                        {
+                          backgroundColor:
+                            !isActive && index === 0 ? "#FF5733" : "#4CAF50",
+                        },
+                      ]}
+                    />
+                  )}
                 </View>
               ))}
             </View>
           )}
         </View>
       </Animated.View>
+      {!isActive && (
+        <TouchableOpacity
+          style={styles.predictButton}
+          onPress={handlePredictButtonPress}
+        >
+          <Text style={styles.predictButtonText}>Predict</Text>
+        </TouchableOpacity>
+      )}
     </LinearGradient>
   );
 };
@@ -116,7 +168,7 @@ const styles = StyleSheet.create({
   status: {
     fontSize: 18,
     marginBottom: 5,
-    color: "#4CAF50", // Green color for active status
+    fontWeight: "bold",
   },
   lastSeen: {
     fontSize: 16,
@@ -133,6 +185,9 @@ const styles = StyleSheet.create({
   historyContainer: {
     width: "100%",
     alignItems: "center",
+  },
+  historySeparator: {
+    height: 20,
   },
   historyItem: {
     flexDirection: "row",
@@ -168,8 +223,17 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "#4CAF50", // Green color for history line
   },
-  historySeparator: {
-    height: 20,
+  predictButton: {
+    backgroundColor: "#4CAF50",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  predictButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
