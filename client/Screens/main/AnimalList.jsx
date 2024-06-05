@@ -9,22 +9,26 @@ import {
   TouchableOpacity,
   Animated,
   Alert,
+  Image,
+  ScrollView,
+  ActivityIndicator
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import Skeleton1 from "../../Constants/Loaders/Skleton1";
+
 const AnimalList = () => {
   const nav = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [newAnimalName, setNewAnimalName] = useState("");
-  const [newAnimalType, setnewAnimalType] = useState("");
   const [animation] = useState(new Animated.Value(0));
   const [userData, setUserData] = useState(null); // State to store user data
   const [authToken, setAuthToken] = useState(null); // State to store authToken
   const [animalData, setAnimalData] = useState([]); // State to store fetched animal data
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true); // State to manage loading
 
   useEffect(() => {
     fetchUserData();
@@ -69,19 +73,25 @@ const AnimalList = () => {
     } catch (error) {
       console.error("Error fetching user data:", error);
       Alert.alert("An error occurred while fetching user data.");
+    } finally {
+      setLoading(false); // Stop loading once the data is fetched
     }
   };
 
   const filteredAnimalData = animalData.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const handleAddAnimal = async () => {
     try {
-
       console.log(userData)
+      console.log(newAnimalName)
+      console.log(userData._id)
       const response = await fetch("https://animal-tracking.onrender.com/api/v1/animals", {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${authToken}`,
+
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -90,6 +100,9 @@ const AnimalList = () => {
           animalTypeId: "665f5b70eb0bdc7de27ec473",
         }),
       });
+
+      const data = await response.json();
+      console.log(data)
   
       if (response.ok) {
         console.log("Animal added successfully.");
@@ -106,8 +119,6 @@ const AnimalList = () => {
     // Hide the modal
     setModalVisible(false);
   };
-  
-  
 
   const handleAnimalPress = (animal) => {
     console.log("Selected Animal:", animal);
@@ -141,45 +152,71 @@ const AnimalList = () => {
     outputRange: [0, 1],
   });
 
+  // Function to generate random profile picture URLs
+  const generateFakeProfilePictureUrl = () => {
+    const images = [
+      "https://w7.pngwing.com/pngs/708/923/png-transparent-goat-animal-farm-vector-thumbnail.png",
+      "https://w7.pngwing.com/pngs/565/912/png-transparent-rabbit-animal-hare-silhouette-nature-vector-thumbnail.png",
+      "https://w7.pngwing.com/pngs/1013/110/png-transparent-pointer-dog-doggy-outline-animal-coat-shape-vector-thumbnail.png",
+      "https://w7.pngwing.com/pngs/422/566/png-transparent-the-horse-konik-animal-is-the-stroke-shape-shadow-the-silhouette-figure-vector-thumbnail.png",
+      "https://w7.pngwing.com/pngs/862/672/png-transparent-cat-kitty-head-domestic-animal-matou-feline-vector-thumbnail.png",
+    ];
+    const randomIndex = Math.floor(Math.random() * images.length);
+    return images[randomIndex];
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
-      <Text style={styles.header}>Tags</Text>
-      <View style={styles.circleContainer}>
-        <View style={styles.circle}>
-          <Text style={styles.circleText}>
-            {filteredAnimalData.length} active
-          </Text>
-          <Text style={styles.circleSubText}>70% spent</Text>
-        </View>
-      </View>
-      <View style={styles.searchContainer}>
-        <Ionicons
-          name="search"
-          size={24}
-          color="black"
-          style={styles.searchIcon}
-        />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search by name..."
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-        />
-      </View>
-      <View style={styles.listContainer}>
-        {filteredAnimalData.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.itemContainer}
-            onPress={() => handleAnimalPress(item)} // Add onPress handler
-          >
-            <View style={[styles.statusIndicator, styles.active]} />
-            <Text style={styles.itemText}>{item.name}</Text>
-            <Text style={styles.lastSeenText}>last seen 1 second ago</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      {loading ? (
+        <Skeleton1 />
+      ) : (
+        <>
+              <Text style={styles.header}>Tags</Text>
+
+          <View style={styles.circleContainer}>
+            <View style={styles.circle}>
+              <Text style={styles.circleText}>
+                {filteredAnimalData.length} active
+              </Text>
+              <Text style={styles.circleSubText}>70% spent</Text>
+            </View>
+          </View>
+          <View style={styles.searchContainer}>
+            <Ionicons
+              name="search"
+              size={24}
+              color="black"
+              style={styles.searchIcon}
+            />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search by name..."
+              value={searchTerm}
+              onChangeText={setSearchTerm}
+            />
+          </View>
+          <ScrollView style={styles.listContainer}>
+            {filteredAnimalData.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.itemContainer}
+                onPress={() => handleAnimalPress(item)}
+              >
+                <Image
+                  source={{ uri: generateFakeProfilePictureUrl() }}
+                  style={styles.avatar}
+                />
+                <View style={styles.textContainer}>
+                  <View style={[styles.statusIndicator, item.active ? styles.active : styles.inactive]} />
+                  <Text style={styles.itemText}>{item.name}</Text>
+                  <Text style={styles.lastSeenText}>{item.active ? 'last seen 1 second ago' : 'Inactive'}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </>
+      )}
       <TouchableOpacity style={styles.addButton} onPress={toggleModal}>
         <Ionicons
           name={modalVisible ? "close" : "add"}
@@ -215,12 +252,6 @@ const AnimalList = () => {
               value={newAnimalName}
               onChangeText={setNewAnimalName}
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Animal Type" // Placeholder text for the second TextInput
-              value={newAnimalType}
-              onChangeText={setnewAnimalType}
-            />
             <TouchableOpacity
               style={styles.submitButton}
               onPress={handleAddAnimal}
@@ -233,6 +264,7 @@ const AnimalList = () => {
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -269,7 +301,7 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    marginTop: 10, // Adjusted spacing between the list and search bar
+    marginTop: 10,
   },
   itemContainer: {
     flexDirection: "row",
@@ -277,6 +309,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  textContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
   },
   statusIndicator: {
     width: 10,
@@ -286,6 +329,9 @@ const styles = StyleSheet.create({
   },
   active: {
     backgroundColor: "#32CD32",
+  },
+  inactive: {
+    backgroundColor: "red", // Change this line to set the inactive state color to red
   },
   itemText: {
     flex: 1,
@@ -400,3 +446,4 @@ const styles = StyleSheet.create({
 });
 
 export default AnimalList;
+                 

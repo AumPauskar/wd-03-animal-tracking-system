@@ -13,13 +13,17 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from '@react-navigation/native';
+import { useCallback } from "react";
 
 const GroupSelection = () => {
-  const [animalData, setAnimalData] = useState([]); // State to store fetched animal data
+  const [animalData, setAnimalData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [groupName, setGroupName] = useState("");
-  const [selectedAnimals, setSelectedAnimals] = useState([]); // State to store selected animals
+  const [selectedAnimals, setSelectedAnimals] = useState([]);
+  const [userData, setuserData] = useState(null)
+  const navigation = useNavigation();
 
   useEffect(() => {
     fetchUserData();
@@ -35,6 +39,10 @@ const GroupSelection = () => {
         );
         return;
       }
+      const userDataString = await AsyncStorage.getItem("userData");
+      const userDat = JSON.parse(userDataString);
+      console.log(userDat);
+      setuserData(userDat)
 
       const response = await fetch(
         "https://animal-tracking.onrender.com/api/v1/animals/users",
@@ -72,13 +80,59 @@ const GroupSelection = () => {
       setSelectedAnimals([...selectedAnimals, animal]);
     }
   };
+  
+  
+  const handleCreateGroup = async () => {
+    try {
+      const selectedAnimalIds = selectedAnimals.map(animal => animal._id);
+      console.log("Selected Animal IDs:", selectedAnimalIds);
+      console.log("Group Name:", groupName);
+  
+      const authToken = await AsyncStorage.getItem("authToken");
+      if (!authToken) {
+        Alert.alert(
+          "Authentication Error",
+          "Authentication token not found. Please sign in again."
+        );
+        return;
+      }
 
-  const handleCreateGroup = () => {
-    // Logic to create the group with selected animals and group name
-    setModalVisible(false);
-    setGroupName("");
-    Alert.alert("Group Created", `Group "${groupName}" has been created.`);
+      console.log(userData._id)
+  
+      const requestBody = {
+        name: groupName,
+        userId: userData._id, // Replace with actual user ID
+        allowedDist: 50, // Replace with the desired allowed distance
+        animals: selectedAnimalIds,
+      };
+  
+      const response = await fetch("https://animal-tracking.onrender.com/api/v1/groups", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+  
+      if (response.ok) {
+        // Reset modal state
+        setModalVisible(false);
+        setGroupName("");
+        Alert.alert("Group Created", `Group "${groupName}" has been created.`);
+        
+        // Navigate back to the previous screen
+        navigation.goBack(); // Assuming 'navigation' prop is passed from the parent component
+      } else {
+        console.error("Failed to create group:", response.statusText);
+        Alert.alert("Failed to create group. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error creating group:", error);
+      Alert.alert("An error occurred while creating the group.");
+    }
   };
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -130,8 +184,14 @@ const GroupSelection = () => {
         transparent={true}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
+        <View style={styles.modalBackground}>
           <View style={styles.modalContent}>
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.closeButton}
+            >
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
             <Text style={styles.modalTitle}>Enter Group Name</Text>
             <TextInput
               style={styles.input}
@@ -221,18 +281,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  modalContainer: {
+  modalBackground: {
     flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    width: 300,
-    padding: 20,
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     borderRadius: 10,
-    alignItems: "center",
+    padding: 20,
+    width:"80%",
   },
   modalTitle: {
     fontSize: 18,
@@ -259,6 +318,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+  },
 });
 
 export default GroupSelection;
+

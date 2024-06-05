@@ -10,6 +10,7 @@ import AnimalList from "../Screens/main/AnimalList";
 import SelectedAnimal from "../Screens/main/mainComponents/SelectedAnimal";
 import CreateGroup from "../Screens/main/CreateGroup";
 import GroupSelection from "../Screens/main/mainComponents/GroupSelection";
+import DisplayMembers from "../Screens/main/mainComponents/DisplayMembers";
 
 const Stack = createStackNavigator();
 
@@ -61,6 +62,11 @@ const PublicRouters = () => {
           name="groupSelection"
           component={GroupSelection}
           options={{ headerShown: true }}
+        />
+                  <Stack.Screen
+          name="displayMembers"
+          component={DisplayMembers}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
