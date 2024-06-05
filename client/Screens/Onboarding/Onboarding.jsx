@@ -21,13 +21,12 @@ const Onboarding = () => {
         const userDat = JSON.parse(userDataString);
         console.log(userDat);
         nav.navigate("mainMap");
-  
       }
     } catch (error) {
       console.error("Error checking authToken:", error);
     }
   };
-  
+
   return (
     <LinearGradient
       style={{
@@ -157,7 +156,7 @@ const Onboarding = () => {
                 color: COLORS.white,
               }}
             >
-              Calling, Enjoy Safe and private texting
+              "Navigate Nature's Wonders: Track Animals with Ease."{" "}
             </Text>
           </View>
 

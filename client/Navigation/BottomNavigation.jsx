@@ -69,6 +69,8 @@ const BottomNavigation = () => {
     try {
       await AsyncStorage.removeItem("authToken");
       await AsyncStorage.removeItem("userData");
+      // await AsyncStorage.setItem("activeTabIndex", 1);
+
       navigation.navigate("onBoarding");
     } catch (error) {
       console.error("Failed to remove authToken from storage", error);

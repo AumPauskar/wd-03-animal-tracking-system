@@ -1,66 +1,57 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Marker } from 'react-native-maps';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useState , useEffect} from 'react';
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import MapView, { Marker, Circle } from "react-native-maps";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 const PredictMap = () => {
   const navigation = useNavigation();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [newAnimalName, setNewAnimalName] = useState("");
-  const [userData, setUserData] = useState(null); // State to store user data
-  const [authToken, setAuthToken] = useState(null); // State to store authToken
-  const [animalData, setAnimalData] = useState([]); // State to store fetched animal data
-  const [searchTerm, setSearchTerm] = useState("");
+  const mapRef = useRef(null); // Ref for MapView component
+  const [animalData, setAnimalData] = useState(null); // State to store fetched animal data
   const [loading, setLoading] = useState(true); // State to manage loading
+
   useEffect(() => {
     fetchUserData();
   }, []);
 
   const fetchUserData = async () => {
     try {
-      const authToken = await AsyncStorage.getItem("authToken");
-      const userdata = await AsyncStorage.getItem("userData");
-      if (!authToken) {
-        Alert.alert(
-          "Authentication Error",
-          "Authentication token not found. Please sign in again."
-        );
-        return;
-      }
-      const userDataString = await AsyncStorage.getItem("userData");
-      const userDat = JSON.parse(userDataString);
-      console.log(userDat);
-      setUserData(userDat)
-      setAuthToken(authToken);
-
       const response = await fetch(
-        "https://animal-tracking.onrender.com/api/v1/animals/users",
+        "https://path-prediction.onrender.com/predict",
         {
-          method: "GET",
+          method: "POST",
           headers: {
-            Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
           },
         }
       );
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Data received:", data);
-        setAnimalData(data);
-      } else {
-        console.error("Failed to fetch data:", response.statusText);
-        Alert.alert("Failed to fetch data. Please try again later.");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
+
+      const markerData = await response.json();
+      setAnimalData(markerData);
+      setLoading(false);
+
+      // Zoom to the predicted location after fetching data
+      zoomToPredictedLocation(markerData.predicted_location);
     } catch (error) {
       console.error("Error fetching user data:", error);
-      Alert.alert("An error occurred while fetching user data.");
-    } finally {
-      setLoading(false); // Stop loading once the data is fetched
+      // Handle error
+    }
+  };
+
+  const zoomToPredictedLocation = (coordinates) => {
+    if (mapRef.current && coordinates) {
+      const region = {
+        latitude: coordinates[0],
+        longitude: coordinates[1],
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      };
+      mapRef.current.animateToRegion(region, 1000);
     }
   };
 
@@ -77,6 +68,7 @@ const PredictMap = () => {
           <Text style={styles.headerText}>Inactive Status Prediction</Text>
         </View>
         <MapView
+          ref={mapRef}
           style={styles.map}
           initialRegion={{
             latitude: 37.78825,
@@ -85,11 +77,36 @@ const PredictMap = () => {
             longitudeDelta: 0.0421,
           }}
         >
+          {/* Existing Marker */}
           <Marker
             coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
             title={"My Marker"}
             description={"Some description"}
           />
+
+          {/* New Marker for predicted location */}
+          {animalData && animalData.predicted_location && (
+            <>
+              <Marker
+                coordinate={{
+                  latitude: animalData.predicted_location[0],
+                  longitude: animalData.predicted_location[1],
+                }}
+                title={"Predicted Location"}
+                description={"Predicted Location radius "}
+                pinColor={"green"} // Optionally, set a different color for the pin
+              />
+              <Circle
+                center={{
+                  latitude: animalData.predicted_location[0],
+                  longitude: animalData.predicted_location[1],
+                }}
+                radius={1000} // Radius in meters (1 km)
+                strokeColor={"#F00"} // Outline color
+                fillColor={"rgba(255, 0, 0, 0.1)"} // Fill color with opacity
+              />
+            </>
+          )}
         </MapView>
       </View>
     </SafeAreaView>
@@ -99,24 +116,24 @@ const PredictMap = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: "black",
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   header: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     height: 60,
-    backgroundColor: '#000',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#000",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingTop: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
@@ -124,15 +141,15 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   backButton: {
-    position: 'absolute',
+    position: "absolute",
     left: 10,
     top: 20,
   },
   headerText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
   },
   map: {
     flex: 1,
